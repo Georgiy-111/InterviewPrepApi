@@ -12,20 +12,20 @@ public class QuestionRepository : IQuestionRepository
     {
         _context = context;
     }
-    
-    public async Task<IEnumerable<Question>> GetAllAsync()
+
+    public async Task<IEnumerable<Question>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _context.Questions.ToListAsync();
+        return await _context.Questions.ToListAsync(cancellationToken);
     }
 
-    public async Task<Question> GetByIdAsync(int id)
+    public async Task<Question?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        return await _context.Questions.FindAsync(id);
+        return await _context.Questions.FirstOrDefaultAsync(q => q.Id == id, cancellationToken);
     }
 
-    public async Task AddAsync(Question question)
+    public async Task AddAsync(Question question, CancellationToken cancellationToken)
     {
-        await _context.Questions.AddAsync(question);
+        await _context.Questions.AddAsync(question, cancellationToken);
     }
 
     public void Update(Question question)
@@ -38,8 +38,8 @@ public class QuestionRepository : IQuestionRepository
         _context.Questions.Remove(question);
     }
 
-    public async Task<bool> SaveChangesAsync()
+    public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
     {
-        return (await _context.SaveChangesAsync()) > 0;
+        return (await _context.SaveChangesAsync(cancellationToken)) > 0;
     }
 }
