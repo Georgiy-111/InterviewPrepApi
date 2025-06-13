@@ -1,4 +1,4 @@
-﻿
+﻿using AutoMapper;
 using InterviewPrepApi.DTOs;
 using InterviewPrepApi.Models;
 using InterviewPrepApi.Repositories;
@@ -7,49 +7,30 @@ namespace InterviewPrepApi.Services;
 
 public class QuestionService : IQuestionService
 {
+    private readonly IMapper _mapper;
     private readonly IQuestionRepository _repository;
 
-    public QuestionService(IQuestionRepository repository)
+    public QuestionService(IQuestionRepository repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
     public async Task<IEnumerable<QuestionReadDto>> GetAllAsync()
     {
         var questions = await _repository.GetAllAsync();
-
-        return questions.Select(q => new QuestionReadDto
-        {
-            Id = q.Id,
-            Text = q.Text,
-            Category = q.Category,
-            Answer = q.Answer,
-            Difficulty = q.Difficulty,
-        });
+        return _mapper.Map<IEnumerable<QuestionReadDto>>(questions);
     }
 
     public async Task<QuestionReadDto> CreateAsync(QuestionCreateDto dto)
     {
-        var question = new Question
-        {
-            Text = dto.Text,
-            Answer = dto.Answer,
-            Category = dto.Category,
-            Difficulty = dto.Difficulty,
-            CreatedAt = DateTime.UtcNow
-        };
+        var question = _mapper.Map<Question>(dto);
+        question.CreatedAt = DateTime.UtcNow;
 
         await _repository.AddAsync(question);
         await _repository.SaveChangesAsync();
 
-        return new QuestionReadDto
-        {
-            Id = question.Id,
-            Text = question.Text,
-            Answer = question.Answer,
-            Category = question.Category,
-            Difficulty = question.Difficulty
-        };
+        return _mapper.Map<QuestionReadDto>(question);
     }
     public async Task<QuestionReadDto> UpdateAsync(int id, QuestionUpdateDto dto)
     {
@@ -57,22 +38,12 @@ public class QuestionService : IQuestionService
         if (question == null)
             return null;
 
-        question.Text = dto.Text;
-        question.Answer = dto.Answer;
-        question.Category = dto.Category;
-        question.Difficulty = dto.Difficulty;
+        _mapper.Map(dto, question);
 
         _repository.Update(question);
         await _repository.SaveChangesAsync();
 
-        return new QuestionReadDto
-        {
-            Id = question.Id,
-            Text = question.Text,
-            Answer = question.Answer,
-            Category = question.Category,
-            Difficulty = question.Difficulty
-        };
+        return _mapper.Map<QuestionReadDto>(question);
     }
 
     public async Task<bool> DeleteAsync(int id)

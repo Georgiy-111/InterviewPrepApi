@@ -2,6 +2,7 @@ using InterviewPrepApi.Data;
 using InterviewPrepApi.Services;
 using Microsoft.EntityFrameworkCore;
 using InterviewPrepApi.Repositories;
+using InterviewPrepApi.Mapping;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<QuestionService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
+
 
 var app = builder.Build();
 
