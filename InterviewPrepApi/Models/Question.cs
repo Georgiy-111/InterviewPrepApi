@@ -7,4 +7,5 @@ public class Question
     public string Answer { get; set; } = null!;    // Ответ на вопрос
     public string Category { get; set; } = null!;  // Категория (например: "C#", "SQL", "OOP")
     public string Difficulty { get; set; } = null!;// Уровень сложности (например: "Junior", "Middle", "Senior")
+    public DateTime CreatedAt { get; set; }
 }

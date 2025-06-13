@@ -1,27 +1,27 @@
 ﻿namespace InterviewPrepApi.DTOs;
 
 /// <summary>
-/// DTO для создания вопроса.
+/// DTO для обновления вопроса.
 /// </summary>
-public class QuestionCreateDto
+public class QuestionUpdateDto
 {
     /// <summary>
-    /// Текст вопроса.
+    /// Новый текст вопроса.
     /// </summary>
     public string Text { get; set; }
 
     /// <summary>
-    /// Ответ.
+    /// Новый ответ на вопрос.
     /// </summary>
     public string Answer { get; set; }
 
     /// <summary>
-    /// Категория.
+    /// Новая категория.
     /// </summary>
     public string Category { get; set; }
 
     /// <summary>
-    /// Уровень сложности (от 1 до 5).
+    /// Новый уровень сложности (от 1 до 5).
     /// </summary>
     public int Difficulty { get; set; }
 }
