@@ -1,31 +1,31 @@
-﻿using InterviewPrepApi.Data;
+﻿
 using InterviewPrepApi.DTOs;
 using InterviewPrepApi.Models;
-using Microsoft.EntityFrameworkCore;
+using InterviewPrepApi.Repositories;
 
 namespace InterviewPrepApi.Services;
 
 public class QuestionService : IQuestionService
 {
-    private readonly AppDbContext _context;
+    private readonly IQuestionRepository _repository;
 
-    public QuestionService(AppDbContext context)
+    public QuestionService(IQuestionRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
     public async Task<IEnumerable<QuestionReadDto>> GetAllAsync()
     {
-        return await _context.Questions
-            .Select(q => new QuestionReadDto
-            {
-                Id = q.Id,
-                Text = q.Text,
-                Category = q.Category,
-                Answer = q.Answer,
-                Difficulty = q.Difficulty,
-            })
-            .ToListAsync();
+        var questions = await _repository.GetAllAsync();
+
+        return questions.Select(q => new QuestionReadDto
+        {
+            Id = q.Id,
+            Text = q.Text,
+            Category = q.Category,
+            Answer = q.Answer,
+            Difficulty = q.Difficulty,
+        });
     }
 
     public async Task<QuestionReadDto> CreateAsync(QuestionCreateDto dto)
@@ -36,11 +36,11 @@ public class QuestionService : IQuestionService
             Answer = dto.Answer,
             Category = dto.Category,
             Difficulty = dto.Difficulty,
-            CreatedAt = DateTime.UtcNow // ← вот эта строка
+            CreatedAt = DateTime.UtcNow
         };
 
-        _context.Questions.Add(question);
-        await _context.SaveChangesAsync();
+        await _repository.AddAsync(question);
+        await _repository.SaveChangesAsync();
 
         return new QuestionReadDto
         {
@@ -53,7 +53,7 @@ public class QuestionService : IQuestionService
     }
     public async Task<QuestionReadDto> UpdateAsync(int id, QuestionUpdateDto dto)
     {
-        var question = await _context.Questions.FindAsync(id);
+        var question = await _repository.GetByIdAsync(id);
         if (question == null)
             return null;
 
@@ -62,7 +62,8 @@ public class QuestionService : IQuestionService
         question.Category = dto.Category;
         question.Difficulty = dto.Difficulty;
 
-        await _context.SaveChangesAsync();
+        _repository.Update(question);
+        await _repository.SaveChangesAsync();
 
         return new QuestionReadDto
         {
@@ -76,12 +77,12 @@ public class QuestionService : IQuestionService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var question = await _context.Questions.FindAsync(id);
+        var question = await _repository.GetByIdAsync(id);
         if (question == null)
             return false;
 
-        _context.Questions.Remove(question);
-        await _context.SaveChangesAsync();
+        _repository.Delete(question);
+        await _repository.SaveChangesAsync();
 
         return true;
     }
