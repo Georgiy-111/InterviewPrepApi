@@ -9,4 +9,6 @@ public interface IQuestionService
         Task<QuestionReadDto> CreateAsync(QuestionCreateDto dto, CancellationToken cancellationToken);
         Task<QuestionReadDto> UpdateAsync(int id, QuestionUpdateDto dto, CancellationToken cancellationToken);
         Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
+        Task<IEnumerable<QuestionReadDto>> GetPaginatedAsync(PaginationParameters pagination, CancellationToken cancellationToken);
+        Task<IEnumerable<QuestionReadDto>> GetFilteredAsync(QuestionFilterDto filter, CancellationToken cancellationToken);
 }

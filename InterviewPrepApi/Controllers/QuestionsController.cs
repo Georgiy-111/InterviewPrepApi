@@ -27,6 +27,51 @@ public class QuestionsController : ControllerBase
         var questions = await _questionService.GetAllAsync(cancellationToken);
         return Ok(questions); 
     }
+    /// <summary>
+    /// Получить вопрос по ID.
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<QuestionReadDto>> GetById(int id, CancellationToken cancellationToken)
+    {
+        var question = await _questionService.GetByIdAsync(id, cancellationToken);
+        if (question == null)
+            return NotFound();
+
+        return Ok(question);
+    }
+    /// <summary>
+    /// Получить список вопросов с поддержкой пагинации.
+    /// Используется для постраничного вывода данных — например, при большом количестве вопросов.
+    /// </summary>
+    [HttpGet("paginated")]
+    public async Task<ActionResult<IEnumerable<QuestionReadDto>>> GetPaginated(
+        [FromQuery] PaginationParameters pagination,
+        CancellationToken cancellationToken)
+    {
+        var result = await _questionService.GetPaginatedAsync(pagination, cancellationToken);
+        return Ok(result);
+    }
+    /// <summary>
+    /// Получить вопросы по фильтрам: категория и сложность.
+    /// </summary>
+    /// <param name="category">Категория (например: "C#", "SQL", "OOP")</param>
+    /// <param name="difficulty">Уровень сложности (например: "Junior", "Middle", "Senior")</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    [HttpGet("filter")]
+    public async Task<ActionResult<IEnumerable<QuestionReadDto>>> GetFiltered(
+        [FromQuery] string? category,
+        [FromQuery] string? difficulty,
+        CancellationToken cancellationToken)
+    {
+        var filterDto = new QuestionFilterDto
+        {
+            Category = category,
+            Difficulty = difficulty
+        };
+
+        var result = await _questionService.GetFilteredAsync(filterDto, cancellationToken);
+        return Ok(result);
+    }
 
     /// <summary>
     /// Создать новый вопрос.

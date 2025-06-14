@@ -10,4 +10,6 @@ public interface IQuestionRepository
     void Update(Question question);
     void Delete(Question question);
     Task<bool> SaveChangesAsync(CancellationToken cancellationToken);
+    
+    Task<IEnumerable<Question>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
 }

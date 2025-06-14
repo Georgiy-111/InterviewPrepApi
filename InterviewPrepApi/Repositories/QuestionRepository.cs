@@ -42,4 +42,11 @@ public class QuestionRepository : IQuestionRepository
     {
         return (await _context.SaveChangesAsync(cancellationToken)) > 0;
     }
+    public async Task<IEnumerable<Question>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        return await _context.Questions
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
 }

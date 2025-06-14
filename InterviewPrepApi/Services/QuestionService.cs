@@ -65,4 +65,23 @@ public class QuestionService : IQuestionService
 
         return _mapper.Map<QuestionReadDto>(question);
     }
+    public async Task<IEnumerable<QuestionReadDto>> GetPaginatedAsync(PaginationParameters pagination, CancellationToken cancellationToken)
+    {
+        var questions = await _repository.GetPaginatedAsync(pagination.PageNumber, pagination.PageSize, cancellationToken);
+        return _mapper.Map<IEnumerable<QuestionReadDto>>(questions);
+    }
+    public async Task<IEnumerable<QuestionReadDto>> GetFilteredAsync(QuestionFilterDto filter, CancellationToken cancellationToken)
+    {
+        var allQuestions = await _repository.GetAllAsync(cancellationToken);
+
+        var filtered = allQuestions.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Category))
+            filtered = filtered.Where(q => q.Category.Equals(filter.Category, StringComparison.OrdinalIgnoreCase));
+
+        if (!string.IsNullOrEmpty(filter.Difficulty))
+            filtered = filtered.Where(q => q.Difficulty.Equals(filter.Difficulty, StringComparison.OrdinalIgnoreCase));
+
+        return _mapper.Map<IEnumerable<QuestionReadDto>>(filtered.ToList());
+    }
 }
